@@ -1,0 +1,64 @@
+# API Automation Base
+
+Ruby/Cucumber automation scaffold for API tests written in Gherkin, with Capybara/Selenium available for UI scenarios when needed.
+
+## Setup
+
+1. Install Ruby.
+2. Install dependencies:
+
+   ```powershell
+   bundle install
+   ```
+
+3. Create your local environment file:
+
+   ```powershell
+   Copy-Item .env.example .env
+   ```
+
+4. Run all scenarios:
+
+   ```powershell
+   bundle exec cucumber
+   ```
+
+Run only API or UI tagged scenarios:
+
+```powershell
+bundle exec cucumber -p api
+bundle exec cucumber -p ui
+```
+
+## Structure
+
+- `features/*.feature`: Gherkin scenarios.
+- `features/step_definitions/*_steps.rb`: Ruby step implementations.
+- `features/support/env.rb`: test bootstrapping, env vars, Capybara config.
+- `features/support/api_client.rb`: reusable HTTP API client.
+- `features/support/world.rb`: shared scenario helper methods.
+
+## Adding A New API Scenario
+
+Create or update a `.feature` file:
+
+```gherkin
+@api
+Scenario: Get a user by id
+  Given the API base url is configured
+  When I send a GET request to "/users/1"
+  Then the response status should be 200
+  And the response body should contain "id" with value 1
+```
+
+For scenarios that need a request body, keep the JSON in Ruby step definitions instead of the feature file:
+
+```gherkin
+@api
+Scenario: Create a post
+  Given the API base url is configured
+  When I create a post
+  Then the response status should be 201
+```
+
+Then define the request body in `features/step_definitions/api_steps.rb`.
