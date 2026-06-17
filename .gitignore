@@ -1,0 +1,7 @@
+.bundle/
+.env
+coverage/
+log/
+reports/
+tmp/
+vendor/bundle/

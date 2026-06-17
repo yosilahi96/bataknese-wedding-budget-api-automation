@@ -1,0 +1,3 @@
+default: --publish-quiet --format pretty --strict
+api: --publish-quiet --format pretty --strict --tags "@api"
+ui: --publish-quiet --format pretty --strict --tags "@ui"
