@@ -2,20 +2,28 @@ Given("the API base url is configured") do
   self.api_client = ApiAutomation::ApiClient.new(base_url: configured_base_url)
 end
 
-POST_REQUEST_BODIES = {
-  create_post: {
-    title: "automation base",
-    body: "created from cucumber",
-    userId: 1
-  }
-}.freeze
+Given("the request body is:") do |body|
+  self.request_body = JSON.parse(body)
+end
+
+Given("the request body is loaded from {string}") do |file_name|
+  self.request_body = request_body_from_file(file_name)
+end
 
 When("I send a GET request to {string}") do |path|
   self.last_response = api_client.get(path)
 end
 
-When("I create a post") do
-  self.last_response = api_client.post("/posts", body: POST_REQUEST_BODIES.fetch(:create_post))
+When("I send a POST request to {string}") do |path|
+  self.last_response = api_client.post(path, body: request_body)
+end
+
+When("I send a PUT request to {string}") do |path|
+  self.last_response = api_client.put(path, body: request_body)
+end
+
+When("I send a PATCH request to {string}") do |path|
+  self.last_response = api_client.patch(path, body: request_body)
 end
 
 When("I send a DELETE request to {string}") do |path|

@@ -51,14 +51,13 @@ Scenario: Get a user by id
   And the response body should contain "id" with value 1
 ```
 
-For scenarios that need a request body, keep the JSON in Ruby step definitions instead of the feature file:
+For scenarios that need a request body, keep the JSON in `features/fixtures/request_bodies` and load it from the feature:
 
 ```gherkin
 @api
 Scenario: Create a post
   Given the API base url is configured
-  When I create a post
+  And the request body is loaded from "posts/create_post.json"
+  When I send a POST request to "/posts"
   Then the response status should be 201
 ```
-
-Then define the request body in `features/step_definitions/api_steps.rb`.

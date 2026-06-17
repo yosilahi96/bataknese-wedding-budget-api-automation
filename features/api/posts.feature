@@ -13,6 +13,7 @@ Feature: Posts API
 
   Scenario: Create a post
     Given the API base url is configured
-    When I create a post
+    And the request body is loaded from "posts/create_post.json"
+    When I send a POST request to "/posts"
     Then the response status should be 201
-    And the response body should contain "title" with value
+    And the response body should contain "title" with value "automation base"
