@@ -1,0 +1,60 @@
+name: API Automation
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: Cucumber suite to run
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - api
+          - ui
+          - login
+
+jobs:
+  cucumber:
+    name: Cucumber ${{ github.event.inputs.suite || 'all' }}
+    runs-on: windows-latest
+    timeout-minutes: 20
+
+    env:
+      BASE_API_URL: ${{ vars.BASE_API_URL || 'https://bataknese-wedding-budget.onrender.com' }}
+      LOGIN_PATH: ${{ vars.LOGIN_PATH || '/api/auth/login' }}
+      LOGIN_SUCCESS_STATUS: ${{ vars.LOGIN_SUCCESS_STATUS || '200' }}
+      BROWSER: chrome
+      HEADLESS: "true"
+      DEFAULT_TIMEOUT: "10"
+      RUBYLIB: ${{ github.workspace }}\support\ruby_overrides
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+
+      - name: Run Cucumber suite
+        shell: pwsh
+        run: |
+          $suite = "${{ github.event.inputs.suite }}"
+          if ([string]::IsNullOrWhiteSpace($suite)) {
+            $suite = "all"
+          }
+
+          switch ($suite) {
+            "api" { bundle exec cucumber -p api }
+            "ui" { bundle exec cucumber -p ui }
+            "login" { bundle exec cucumber --tags "@login" }
+            default { bundle exec cucumber }
+          }
