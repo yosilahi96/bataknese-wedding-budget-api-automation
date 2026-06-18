@@ -1,6 +1,11 @@
 name: API Automation
 
 on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
   push:
     branches:
       - main
@@ -21,7 +26,7 @@ on:
           - login
 
 jobs:
-  cucumber:
+  automation-be:
     name: Cucumber ${{ github.event.inputs.suite || github.event.client_payload.suite || 'all' }}
     runs-on: windows-latest
     timeout-minutes: 20
