@@ -53,9 +53,23 @@ jobs:
             $suite = "all"
           }
 
+          New-Item -ItemType Directory -Force reports | Out-Null
+          $reportArgs = @(
+            "--format", "html", "--out", "reports/cucumber.html",
+            "--format", "json", "--out", "reports/cucumber.json"
+          )
+
           switch ($suite) {
-            "api" { bundle exec cucumber -p api }
-            "ui" { bundle exec cucumber -p ui }
-            "login" { bundle exec cucumber --tags "@login" }
-            default { bundle exec cucumber }
+            "api" { bundle exec cucumber -p api @reportArgs }
+            "ui" { bundle exec cucumber -p ui @reportArgs }
+            "login" { bundle exec cucumber --tags "@login" @reportArgs }
+            default { bundle exec cucumber @reportArgs }
           }
+
+      - name: Upload Cucumber report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cucumber-report-${{ github.run_number }}
+          path: reports/
+          if-no-files-found: warn
