@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  repository_dispatch:
+    types:
+      - application-merged
   workflow_dispatch:
     inputs:
       suite:
@@ -19,7 +22,7 @@ on:
 
 jobs:
   cucumber:
-    name: Cucumber ${{ github.event.inputs.suite || 'all' }}
+    name: Cucumber ${{ github.event.inputs.suite || github.event.client_payload.suite || 'all' }}
     runs-on: windows-latest
     timeout-minutes: 20
 
@@ -45,7 +48,7 @@ jobs:
       - name: Run Cucumber suite
         shell: pwsh
         run: |
-          $suite = "${{ github.event.inputs.suite }}"
+          $suite = "${{ github.event.inputs.suite || github.event.client_payload.suite || 'all' }}"
           if ([string]::IsNullOrWhiteSpace($suite)) {
             $suite = "all"
           }
