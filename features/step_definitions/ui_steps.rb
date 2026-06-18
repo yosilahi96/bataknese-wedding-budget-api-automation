@@ -31,10 +31,10 @@ end
 
 When("I visit {string}") do |url|
   ensure_capybara!
-  visit(url)
+  Capybara.current_session.visit(url)
 end
 
 Then("the page should contain {string}") do |text|
   ensure_capybara!
-  expect(page).to have_content(text)
+  expect(Capybara.current_session).to have_content(text)
 end

@@ -1,4 +1,4 @@
-@login
+@api @login
 Feature: Login API
   Scenario Outline: Login with valid credentials
     Given the API base url is configured
@@ -9,4 +9,3 @@ Feature: Login API
       | request_body                | status_code |
       | login/valid_login.json      | 200         |
       | login/invalid_login.json    | 401         |   
-
