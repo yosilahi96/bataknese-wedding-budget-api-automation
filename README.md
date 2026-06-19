@@ -51,7 +51,7 @@ Scenario: Get a user by id
   And the response body should contain "id" with value 1
 ```
 
-For scenarios that need a request body, keep the JSON in `features/fixtures/request_bodies` and load it from the feature:
+For scenarios that need a request body, keep the JSON in `features/fixtures/request_bodies` and load it from the features:
 
 ```gherkin
 @api
