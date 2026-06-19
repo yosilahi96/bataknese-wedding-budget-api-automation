@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'windows' }
+    agent any
 
     options {
         skipDefaultCheckout(true)
@@ -27,7 +27,7 @@ pipeline {
         BROWSER = 'chrome'
         HEADLESS = 'true'
         DEFAULT_TIMEOUT = '10'
-        RUBYLIB = "${WORKSPACE}\\support\\ruby_overrides"
+        RUBYLIB = "${WORKSPACE}/support/ruby_overrides"
     }
 
     stages {
@@ -39,47 +39,47 @@ pipeline {
 
         stage('Set up Ruby') {
             steps {
-                powershell '''
-                    $ErrorActionPreference = "Stop"
+                sh '''
+                    set -e
                     ruby --version
                     bundle --version
                     bundle config set path vendor/bundle
-                    bundle check
-                    if ($LASTEXITCODE -ne 0) {
+                    if ! bundle check; then
                         bundle install --jobs 4 --retry 3
-                        if ($LASTEXITCODE -ne 0) {
-                            exit $LASTEXITCODE
-                        }
-                    }
+                    fi
                 '''
             }
         }
 
         stage('Run Cucumber suite') {
             steps {
-                powershell '''
-                    $ErrorActionPreference = "Stop"
-                    $suite = $env:SUITE
-                    if ([string]::IsNullOrWhiteSpace($suite)) {
-                        $suite = "all"
-                    }
+                sh '''
+                    set -e
+                    suite="${SUITE:-all}"
+                    mkdir -p reports
 
-                    New-Item -ItemType Directory -Force reports | Out-Null
-                    $reportArgs = @(
-                        "--format", "html", "--out", "reports/cucumber.html",
-                        "--format", "json", "--out", "reports/cucumber.json"
-                    )
-
-                    switch ($suite) {
-                        "api"   { bundle exec cucumber -p api @reportArgs }
-                        "ui"    { bundle exec cucumber -p ui @reportArgs }
-                        "login" { bundle exec cucumber --tags "@login" @reportArgs }
-                        default { bundle exec cucumber @reportArgs }
-                    }
-
-                    if ($LASTEXITCODE -ne 0) {
-                        exit $LASTEXITCODE
-                    }
+                    case "$suite" in
+                        api)
+                            bundle exec cucumber -p api \
+                                --format html --out reports/cucumber.html \
+                                --format json --out reports/cucumber.json
+                            ;;
+                        ui)
+                            bundle exec cucumber -p ui \
+                                --format html --out reports/cucumber.html \
+                                --format json --out reports/cucumber.json
+                            ;;
+                        login)
+                            bundle exec cucumber --tags '@login' \
+                                --format html --out reports/cucumber.html \
+                                --format json --out reports/cucumber.json
+                            ;;
+                        *)
+                            bundle exec cucumber \
+                                --format html --out reports/cucumber.html \
+                                --format json --out reports/cucumber.json
+                            ;;
+                    esac
                 '''
             }
         }
