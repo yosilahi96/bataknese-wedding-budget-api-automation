@@ -6,6 +6,7 @@ Feature: Login API
     When I send a "POST" request to "/api/auth/login"
     Then the response status should be 200
     And the response body should contain "user.name" with value "Yosua"
+    And the response body should contain "user.isAdmin" with value false
     And the response body should match the schema:
       | field        | type    |
       | token        | string  |

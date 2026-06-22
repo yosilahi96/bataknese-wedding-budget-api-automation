@@ -30,6 +30,10 @@ Then("the response body should contain {string} with value {int}") do |field_pat
   expect(value_at_path(parsed_response_body, field_path)).to eq(expected_value)
 end
 
+Then(/^the response body should contain "([^"]+)" with value (true|false)$/) do |field_path, expected_value|
+  expect(value_at_path(parsed_response_body, field_path)).to eq(expected_value == "true")
+end
+
 Then("the response body should match the schema:") do |table|
   table.hashes.each do |field|
     field_path = field.fetch("field")
