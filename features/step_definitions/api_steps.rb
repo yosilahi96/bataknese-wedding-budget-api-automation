@@ -29,3 +29,26 @@ end
 Then("the response body should contain {string} with value {int}") do |field_path, expected_value|
   expect(value_at_path(parsed_response_body, field_path)).to eq(expected_value)
 end
+
+Then("the response body should match the schema:") do |table|
+  table.hashes.each do |field|
+    field_path = field.fetch("field")
+    expected_type = field.fetch("type").downcase
+    actual_value = value_at_path(parsed_response_body, field_path)
+
+    valid_type = case expected_type
+                 when "string" then actual_value.is_a?(String)
+                 when "integer" then actual_value.is_a?(Integer)
+                 when "number" then actual_value.is_a?(Numeric)
+                 when "boolean" then [true, false].include?(actual_value)
+                 when "object" then actual_value.is_a?(Hash)
+                 when "array" then actual_value.is_a?(Array)
+                 when "null" then actual_value.nil?
+                 else
+                   raise ArgumentError, "Unsupported schema type: #{expected_type}"
+                 end
+
+    expect(valid_type).to be(true),
+      "Expected '#{field_path}' to be #{expected_type}, but got #{actual_value.class}"
+  end
+end
