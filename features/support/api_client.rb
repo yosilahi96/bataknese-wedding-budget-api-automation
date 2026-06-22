@@ -2,6 +2,8 @@ module ApiAutomation
   class ApiClient
     include HTTParty
 
+    SUPPORTED_METHODS = %i[get post put patch delete].freeze
+
     DEFAULT_HEADERS = {
       "Accept" => "application/json",
       "Content-Type" => "application/json"
@@ -34,9 +36,10 @@ module ApiAutomation
       request(:delete, path, headers: headers)
     end
 
-    private
-
     def request(method, path, query: {}, body: nil, headers: {})
+      method = method.to_s.downcase.to_sym
+      raise ArgumentError, "Unsupported HTTP method: #{method}" unless SUPPORTED_METHODS.include?(method)
+
       self.class.public_send(
         method,
         url_for(path),
@@ -45,6 +48,8 @@ module ApiAutomation
         headers: @headers.merge(headers)
       )
     end
+
+    private
 
     def url_for(path)
       normalized_path = path.to_s.start_with?("/") ? path : "/#{path}"

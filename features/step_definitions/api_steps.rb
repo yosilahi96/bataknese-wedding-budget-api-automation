@@ -10,24 +10,8 @@ Given("the request body is loaded from {string}") do |file_name|
   self.request_body = request_body_from_file(file_name)
 end
 
-When("I send a GET request to {string}") do |path|
-  self.last_response = api_client.get(path)
-end
-
-When("I send a POST request to {string}") do |path|
-  self.last_response = api_client.post(path, body: request_body)
-end
-
-When("I send a PUT request to {string}") do |path|
-  self.last_response = api_client.put(path, body: request_body)
-end
-
-When("I send a PATCH request to {string}") do |path|
-  self.last_response = api_client.patch(path, body: request_body)
-end
-
-When("I send a DELETE request to {string}") do |path|
-  self.last_response = api_client.delete(path)
+When("I send a {string} request to {string}") do |method, path|
+  self.last_response = api_client.request(method, path, body: request_body)
 end
 
 Then("the response status should be {int}") do |expected_status|
