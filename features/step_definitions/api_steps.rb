@@ -1,5 +1,6 @@
 Given("the API base url is configured") do
   self.api_client = ApiAutomation::ApiClient.new(base_url: configured_base_url)
+  self.request_headers = {}
 end
 
 Given("the request body is:") do |body|
@@ -10,8 +11,30 @@ Given("the request body is loaded from {string}") do |file_name|
   self.request_body = request_body_from_file(file_name)
 end
 
+Given("I am authenticated with valid login credentials") do
+  login_body = request_body_from_file("login/valid_login.json")
+  login_path = ENV.fetch("LOGIN_PATH", "/api/auth/login")
+  expected_status = Integer(ENV.fetch("LOGIN_SUCCESS_STATUS", "200"))
+  response = api_client.request("POST", login_path, body: login_body, headers: {})
+
+  expect(response.code).to eq(expected_status)
+
+  token = JSON.parse(response.body).fetch("token")
+  self.request_headers ||= {}
+  request_headers["Authorization"] = "Bearer #{token}"
+end
+
+
 When("I send a {string} request to {string}") do |method, path|
-  self.last_response = api_client.request(method, path, body: request_body)
+  self.last_response = api_client.request(method, path, body: request_body, headers: headers_for_request)
+end
+
+When("I send a {string} request to the API path configured from {string}") do |method, env_var_name|
+  path = ENV.fetch(env_var_name) do
+    raise "#{env_var_name} is missing. Add it to your .env file or export it before running Cucumber."
+  end
+
+  self.last_response = api_client.request(method, path, body: request_body, headers: headers_for_request)
 end
 
 Then("the response status should be {int}") do |expected_status|
@@ -56,3 +79,5 @@ Then("the response body should match the schema:") do |table|
       "Expected '#{field_path}' to be #{expected_type}, but got #{actual_value.class}"
   end
 end
+
+

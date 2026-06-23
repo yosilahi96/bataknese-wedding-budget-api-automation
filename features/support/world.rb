@@ -1,6 +1,6 @@
 module ApiAutomation
   module World
-    attr_accessor :api_client, :last_response, :request_body
+    attr_accessor :api_client, :last_response, :request_body, :request_headers
 
     def configured_base_url
       ENV.fetch("BASE_API_URL") do
@@ -19,6 +19,10 @@ module ApiAutomation
       JSON.parse(File.read(fixture_path))
     rescue Errno::ENOENT
       raise "Request body fixture not found: #{fixture_path}"
+    end
+
+    def headers_for_request
+      request_headers || {}
     end
 
     def parsed_response_body

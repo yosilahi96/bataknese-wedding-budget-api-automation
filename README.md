@@ -30,6 +30,15 @@ bundle exec cucumber -p api
 bundle exec cucumber -p ui
 ```
 
+Run authenticated API scenarios:
+
+```powershell
+$env:RUBYLIB = "$PWD\support\ruby_overrides;$env:RUBYLIB"
+bundle exec cucumber -p bearer
+```
+
+Authenticated scenarios log in automatically using `features/fixtures/request_bodies/login/valid_login.json`, so you do not need to store a bearer token in `.env`.
+
 ## Structure
 
 - `features/*.feature`: Gherkin scenarios.
@@ -61,3 +70,15 @@ Scenario: Create a post
   When I send a POST request to "/posts"
   Then the response status should be 201
 ```
+
+For scenarios that need bearer authentication, log in during the scenario and use the API path directly in the feature:
+
+```gherkin
+@api @bearer_token @requires_bearer_token
+Scenario: Access protected API using bearer token
+  Given the API base url is configured
+  And I am authenticated with valid login credentials
+  When I send a "GET" request to "/api/projects"
+  Then the response status should be 200
+```
+

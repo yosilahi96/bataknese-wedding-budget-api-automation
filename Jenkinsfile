@@ -11,7 +11,7 @@ pipeline {
     parameters {
         choice(
             name: 'SUITE',
-            choices: ['all', 'api', 'ui', 'login'],
+            choices: ['all', 'api', 'bearer', 'ui', 'login'],
             description: 'Cucumber suite to run'
         )
     }
@@ -64,6 +64,11 @@ pipeline {
                                 --format html --out reports/cucumber.html \
                                 --format json --out reports/cucumber.json
                             ;;
+                        bearer)
+                            bundle exec cucumber -p bearer \
+                                --format html --out reports/cucumber.html \
+                                --format json --out reports/cucumber.json
+                            ;;
                         ui)
                             bundle exec cucumber -p ui \
                                 --format html --out reports/cucumber.html \
@@ -103,3 +108,4 @@ pipeline {
         }
     }
 }
+
