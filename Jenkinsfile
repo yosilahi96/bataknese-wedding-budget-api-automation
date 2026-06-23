@@ -80,7 +80,7 @@ pipeline {
                                 --format json --out reports/cucumber.json
                             ;;
                         *)
-                            bundle exec cucumber \
+                            bundle exec cucumber -p api \
                                 --format html --out reports/cucumber.html \
                                 --format json --out reports/cucumber.json
                             ;;
@@ -108,4 +108,7 @@ pipeline {
         }
     }
 }
+
+
+
 

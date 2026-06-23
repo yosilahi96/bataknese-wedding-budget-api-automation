@@ -1,4 +1,5 @@
-default: --publish-quiet --format pretty --strict --tags "not @requires_bearer_token"
-api: --publish-quiet --format pretty --strict --tags "@api and not @requires_bearer_token"
+default: --publish-quiet --format pretty --strict --tags "@api"
+api: --publish-quiet --format pretty --strict --tags "@api"
 bearer: --publish-quiet --format pretty --strict --tags "@bearer_token"
 ui: --publish-quiet --format pretty --strict --tags "@ui"
+
