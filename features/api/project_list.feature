@@ -1,6 +1,8 @@
 @api @bearer_token @requires_bearer_token
 Feature: Project List
-  Scenario: User able to access project list
+  Scenario: User able to access projec list
+
+
     Given the API base url is configured
     And I am authenticated with valid login credentials
     When I send a "GET" request to "/api/projects"
